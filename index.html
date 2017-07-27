@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Chat Application</title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.amaran/0.5.4/amaran.min.css">
+	</head>
+	<style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+	<body>
+	<div id="title" style="text-align: center;color:blue">
+		<h1>Simple Chat Application using Socket.io, VueJs and Express </h1>
+	</div>
+		<div id="chat">
+			<ul id="messages" v-for="item in recievedMessages">
+				<li>{{item}}</li>
+			</ul>
+			<form>
+			<input id="m" v-model="message" @keyup.enter="sendMessage">
+			<button type="submit" v-on:click="sendMessage">Send</button>
+			</form>
+		</div>
+		
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.0/vue.js"></script>
+		<script src="https://cdn.jsdelivr.net/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/jquery.amaran/0.5.4/jquery.amaran.min.js"></script>
+		<script>
+			var socket = io();
+			var app = new Vue({
+				el: '#chat',
+				data: {
+					message : '',
+					recievedMessages: ['one', 'two'],
+				},
+				created (){
+					socket.on('chat.message', function(message){
+						this.popUp();
+						this.recievedMessages.push(message);
+						this.message = ''
+					}.bind(this));
+				},
+				methods: {
+					sendMessage(e){
+						e.preventDefault()
+							socket.emit('chat.message', this.message)
+					},
+					popUp(){
+						$('#start').on('click',function(){
+								$.amaran({
+								'message'   :'My positioning example.',
+									'position'  :'top right'
+								});
+								});
+					}
+					}
+				
+			});
+		</script>
+	</body>
+</html>
